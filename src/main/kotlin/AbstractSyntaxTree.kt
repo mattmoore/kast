@@ -12,7 +12,7 @@ class AbstractSyntaxTree {
         return Parser.parseFile(code)
     }
 
-    fun getNodesByType(nodes: List<Node.Decl>, type: KotlinType) : List<Node> {
+    fun nodesByType(nodes: List<Node.Decl>, type: KotlinType) : List<Node> {
         return when(type) {
             KotlinType.Function -> nodes.filter { it is Node.Decl.Func }
             KotlinType.Class    -> nodes.filter { it is Node.Decl.Structured }
@@ -26,9 +26,22 @@ class AbstractSyntaxTree {
                 .map { it as Node.Decl.Property }
     }
 
-    fun classFunctions(node: Node.Decl.Structured) : List<Node.Decl.Func> {
+    fun classFunctions(node: Node.Decl.Structured) : List<Function> {
         return node.members
                 .filter { it is Node.Decl.Func }
                 .map { it as Node.Decl.Func }
+                .map {
+                    Function(
+                        name = it.name,
+                        type = (it.type?.ref as Node.TypeRef.Simple).pieces.first().name,
+                        params = it.params.map {
+                            Parameter(name = it.name, type = (it.type.ref as Node.TypeRef.Simple).pieces.first().name)
+                        }
+                    )
+                }
+    }
+
+    fun classFunctionType(node: Node.Decl.Func) : String {
+        return (node.type?.ref as Node.TypeRef.Simple).pieces.first().name
     }
 }

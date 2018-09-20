@@ -1,0 +1,1 @@
+data class Function(val name: String, val type: String, val params: List<Parameter>)

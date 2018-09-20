@@ -11,28 +11,28 @@ public class AbstractSyntaxTreeTest {
     }
 
     @Test
-    @DisplayName("should return functions")
-    fun getNodesByTypeFunctionTest() {
+    @DisplayName("should get functions")
+    fun nodesByTypeFunctionTest() {
         val ast = AbstractSyntaxTree().parseAST(sourceCode())
-        val nodes = AbstractSyntaxTree().getNodesByType(ast.decls, AbstractSyntaxTree.KotlinType.Function)
+        val nodes = AbstractSyntaxTree().nodesByType(ast.decls, AbstractSyntaxTree.KotlinType.Function)
         val functions = nodes.map { (it as Node.Decl.Func).name }
         assert(functions == listOf("bar", "baz"))
     }
 
     @Test
-    @DisplayName("should return classes")
-    fun getNodesByTypeClassTest() {
+    @DisplayName("should get classes")
+    fun nodesByTypeClassTest() {
         val ast = AbstractSyntaxTree().parseAST(sourceCode())
-        val nodes = AbstractSyntaxTree().getNodesByType(ast.decls, AbstractSyntaxTree.KotlinType.Class)
+        val nodes = AbstractSyntaxTree().nodesByType(ast.decls, AbstractSyntaxTree.KotlinType.Class)
         val classes = nodes.map { (it as Node.Decl.Structured).name }
         assert(classes == listOf("Person"))
     }
 
     @Test
-    @DisplayName("should return class member properties")
-    fun getClassPropertiesTest() {
+    @DisplayName("should get class member properties")
+    fun classPropertiesTest() {
         val ast = AbstractSyntaxTree().parseAST(sourceCode())
-        val nodes = AbstractSyntaxTree().getNodesByType(ast.decls, AbstractSyntaxTree.KotlinType.Class)
+        val nodes = AbstractSyntaxTree().nodesByType(ast.decls, AbstractSyntaxTree.KotlinType.Class)
         val personClass = nodes.find { (it as Node.Decl.Structured).name == "Person" }
         val propertyNames = AbstractSyntaxTree().classProperties(personClass as Node.Decl.Structured)
                 .map { (it.expr as Node.Expr.Name).name }
@@ -40,14 +40,19 @@ public class AbstractSyntaxTreeTest {
     }
 
     @Test
-    @DisplayName("should return class member functions")
-    fun getClassFunctionsTest() {
+    @DisplayName("should get class member functions")
+    fun classFunctionsTest() {
         val ast = AbstractSyntaxTree().parseAST(sourceCode())
-        val nodes = AbstractSyntaxTree().getNodesByType(ast.decls, AbstractSyntaxTree.KotlinType.Class)
+        val nodes = AbstractSyntaxTree().nodesByType(ast.decls, AbstractSyntaxTree.KotlinType.Class)
         val personClass = nodes.find { (it as Node.Decl.Structured).name == "Person" }
-        val functionNames = AbstractSyntaxTree().classFunctions(personClass as Node.Decl.Structured)
-                .map { it.name }
-        assert(functionNames == listOf("fullName"))
+        val functions = AbstractSyntaxTree().classFunctions(personClass as Node.Decl.Structured)
+
+        assert(functions == listOf(
+                Function(name = "fullName", type = "String", params = emptyList()),
+                Function(name = "sampleFunc", type = "Int", params = listOf(
+                        Parameter(name = "sampleArg", type = "String"),
+                        Parameter(name = "sampleArg2", type = "Int")))
+        ))
     }
 
     private fun sourceCode() : String {
@@ -67,6 +72,10 @@ public class AbstractSyntaxTreeTest {
 
                 fun fullName() : String {
                     return ""
+                }
+
+                fun sampleFunc(sampleArg: String, sampleArg2: Int) : Int {
+                    return sampleArgs2
                 }
             }
 
