@@ -1,10 +1,10 @@
 package io.mattmoore.kast
 
-import org.junit.jupiter.api.Test
+import kotlin.test.*
 
 internal class ParsingTest {
     @Test
-    fun parseFunctionTest() {
+    fun `parses a function`() {
         val source = """
         fun sampleFunc(sampleArg: String, sampleArg2: Int) : String {
             return "TEST"
@@ -21,7 +21,7 @@ internal class ParsingTest {
     }
 
     @Test
-    fun parsePropertyTest() {
+    fun `parses a property`() {
         val source = """
             package foo
             class Person(firstName: String, lastName: String)
@@ -37,7 +37,7 @@ internal class ParsingTest {
     }
 
     @Test
-    fun parseClassTest() {
+    fun `parses a class`() {
         val source = """
         package foo
         class Person(firstName: String, lastName: String) {
