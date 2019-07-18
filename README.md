@@ -1,4 +1,4 @@
-# Kotlin Abstract Syntax Tree Library
+# KAST (Kotlin Abstract Syntax Tree Library)
 
 Library that parses Kotlin code into an abstract syntax tree.
 
