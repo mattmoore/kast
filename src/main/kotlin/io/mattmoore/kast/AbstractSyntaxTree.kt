@@ -6,19 +6,52 @@ enum class AccessLevel {
     Protected,
 }
 
-data class AbstractSyntaxTree(val nodes: List<Node>)
+sealed class Node(open var children: List<Node>)
 
-sealed class Node
+data class ASTNode(override var children: List<Node> = emptyList()) : Node(children)
 
-data class Class(val name: String, val properties: List<Node>, val methods: List<Node>) : Node()
+fun node(children: List<Node>): Node {
+    return ASTNode(children)
+}
 
-data class Property(val name: String, val readOnly: Boolean = true) : Node()
+data class Class(
+        override var children: List<Node> = emptyList(),
+        val name: String
+) : Node(children)
+
+data class Property(
+        override var children: List<Node> = emptyList(),
+        val name: String,
+        val value: String,
+        val type: String,
+        val readOnly: Boolean = true
+) : Node(children)
 
 data class Function(
+        override var children: List<Node> = emptyList(),
         val name: String,
         val accessLevel: AccessLevel = AccessLevel.Public,
         val returnType: String,
         val parameters: List<Parameter>
-) : Node()
+) : Node(children)
 
-data class Parameter(val name: String, val dataType: String) : Node()
+sealed class Statement(
+        children: List<Node> = emptyList()
+) : Node(children)
+
+data class AssignmentStatement(
+        override var children: List<Node> = emptyList(),
+        val left: String,
+        val right: String
+) : Statement(children)
+
+data class ReturnStatement(
+        override var children: List<Node> = emptyList(),
+        val value: String
+) : Statement(children)
+
+data class Parameter(
+        override var children: List<Node> = emptyList(),
+        val name: String,
+        val dataType: String
+) : Node(children)

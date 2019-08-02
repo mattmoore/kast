@@ -14,12 +14,11 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.psi.KtFile
 
-fun parse(source: String): AbstractSyntaxTree {
-    val ast = parsePsiFile(source).also { file ->
+fun parse(source: String): Node {
+    val tree = parsePsiFile(source).also { file ->
         file.collectDescendantsOfType<PsiErrorElement>()
     }
-    val nodes = ast.declarations.map { convertNode(it) }
-    return AbstractSyntaxTree(nodes)
+    return node(tree.declarations.map { convertNode(it) })
 }
 
 private fun project(): Project {
